@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy name="SimpleStockProxy" startOnLoad="true" transports="https http" xmlns="http://ws.apache.org/ns/synapse">
+    <target>
+        <endpoint name="endpoint_urn_uuid_88e0a09c-beb9-472a-a334-d1e801426f91">
+            <address uri="http://localhost:9000/services/SimpleStockQuoteService"/>
+        </endpoint>
+        <inSequence>
+            <log level="custom">
+                <property name="Trace" value="Starting In Sequence"/>
+            </log>
+            <clone continueParent="true">
+                <target>
+                    <sequence>
+                        <log>
+                            <property name="Trace" value="Within clone mediator, In sequence"/>
+                        </log>
+                    </sequence>
+                </target>
+            </clone>
+        </inSequence>
+        <outSequence>
+            <clone continueParent="true">
+                <target>
+                    <sequence>
+                        <log>
+                            <property name="Trace" value="Within close mediator, Out sequence"/>
+                        </log>
+                    </sequence>
+                </target>
+            </clone>
+            <log level="custom">
+                <property name="Trace" value="Sending response to client.."/>
+            </log>
+            <send/>
+        </outSequence>
+        <faultSequence/>
+    </target>
+</proxy>
