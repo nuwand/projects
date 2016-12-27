@@ -23,7 +23,7 @@
                 <target>
                     <sequence>
                         <log>
-                            <property name="Trace" value="Within close mediator, Out sequence"/>
+                            <property name="Trace" value="Within clone mediator, Out sequence"/>
                         </log>
                     </sequence>
                 </target>
