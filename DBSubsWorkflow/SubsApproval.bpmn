@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="myProcess" name="My process" isExecutable="true">
+    <startEvent id="startevent1" name="Start Process">
+      <extensionElements>
+        <activiti:formProperty id="workflowExternalRef" name="workflowExternalRef" type="string" writable="false" required="true"></activiti:formProperty>
+        <activiti:formProperty id="callBackURL" name="callBackURL" type="string" writable="false" required="true"></activiti:formProperty>
+        <activiti:formProperty id="apiName" name="apiName" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="apiVersion" name="apiVersion" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="subscriber" name="subscriber" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="applicationName" name="applicationName" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="tierName" name="tierName" type="string" writable="false"></activiti:formProperty>
+      </extensionElements>
+    </startEvent>
+    <userTask id="usertask1" name="Approval 1" activiti:candidateGroups="role1">
+      <extensionElements>
+        <activiti:formProperty id="confirm" name="Confirm Request" type="enum" required="true">
+          <activiti:value id="true" name="Approve"></activiti:value>
+          <activiti:value id="false" name="Reject"></activiti:value>
+        </activiti:formProperty>
+        <activiti:formProperty id="apiName" name="API Name" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="apiVersion" name="API Version" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="subscriber" name="Developer" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="applicationName" name="Application Name" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="tierName" name="Business Plan" type="string" writable="false"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="servicetask1" name="Callback Task" activiti:class="org.wso2.carbon.bpmn.extensions.rest.RESTTask" activiti:extensionId="org.wso2.developerstudio.bpmn.extensions.restTask.RESTTask">
+      <extensionElements>
+        <activiti:field name="serviceURL">
+          <activiti:expression>${callBackURL}</activiti:expression>
+        </activiti:field>
+        <activiti:field name="basicAuthUsername">
+          <activiti:string>admin</activiti:string>
+        </activiti:field>
+        <activiti:field name="basicAuthPassword">
+          <activiti:string>admin</activiti:string>
+        </activiti:field>
+        <activiti:field name="method">
+          <activiti:string>POST</activiti:string>
+        </activiti:field>
+        <activiti:field name="input">
+          <activiti:expression>workflowReference=${workflowExternalRef}&amp;status=APPROVED</activiti:expression>
+        </activiti:field>
+        <activiti:field name="outputVariable">
+          <activiti:string>response</activiti:string>
+        </activiti:field>
+        <activiti:field name="headers">
+          <activiti:string>{"Content-Type":"application/x-www-form-urlencoded"}</activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+    <userTask id="usertask3" name="Approval 2" activiti:candidateGroups="role2">
+      <extensionElements>
+        <activiti:formProperty id="confirm" name="Confirm Request" type="enum" required="true">
+          <activiti:value id="true" name="Approve"></activiti:value>
+          <activiti:value id="false" name="Reject"></activiti:value>
+        </activiti:formProperty>
+        <activiti:formProperty id="apiName" name="API Name" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="apiVersion" name="API Version" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="subscriber" name="Developer" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="applicationName" name="Application Name" type="string" writable="false"></activiti:formProperty>
+        <activiti:formProperty id="tierName" name="Business Plan" type="string" writable="false"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="usertask3"></sequenceFlow>
+    <sequenceFlow id="flow3" sourceRef="usertask3" targetRef="servicetask1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
+    <bpmndi:BPMNPlane bpmnElement="myProcess" id="BPMNPlane_myProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="150.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="280.0" y="90.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="730.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask3" id="BPMNShape_usertask3">
+        <omgdc:Bounds height="55.0" width="105.0" x="510.0" y="90.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="167.0" y="200.0"></omgdi:waypoint>
+        <omgdi:waypoint x="332.0" y="145.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="385.0" y="117.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0" y="117.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="562.0" y="145.0"></omgdi:waypoint>
+        <omgdi:waypoint x="782.0" y="220.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
