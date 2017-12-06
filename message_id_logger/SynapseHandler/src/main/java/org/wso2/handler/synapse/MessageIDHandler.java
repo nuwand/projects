@@ -18,10 +18,13 @@
  */
 package org.wso2.handler.synapse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.AbstractSynapseHandler;
 import org.apache.synapse.MessageContext;
+import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.slf4j.MDC;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class MessageIDHandler extends AbstractSynapseHandler {
@@ -30,9 +33,21 @@ public class MessageIDHandler extends AbstractSynapseHandler {
     private static final String LOG_KEY = "messageId";
 
     public boolean handleRequestInFlow(MessageContext messageContext) {
-        String messageId = UUID.randomUUID().toString();
+        org.apache.axis2.context.MessageContext axis2MC;
+        axis2MC = ((Axis2MessageContext) messageContext).
+                getAxis2MessageContext();
+        Map<String, String> headers =
+                (Map) axis2MC.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
+
+        String messageId = headers.get("X-Transaction-ID");
+
+        if(StringUtils.isEmpty(messageId)){
+            messageId = UUID.randomUUID().toString();
+            headers.put("X-Transaction-ID", messageId);
+        }
+
         messageContext.setProperty(__MESSAGE_ID__, messageId);
-        MDC.put(LOG_KEY, messageId + " - Request Flow");
+        MDC.put(LOG_KEY, messageId + " - [REQUEST]");
         return true;
     }
 
@@ -41,7 +56,7 @@ public class MessageIDHandler extends AbstractSynapseHandler {
     }
 
     public boolean handleResponseInFlow(MessageContext messageContext) {
-        MDC.put(LOG_KEY, String.valueOf(messageContext.getProperty(__MESSAGE_ID__)) + " - Response Flow");
+        MDC.put(LOG_KEY, String.valueOf(messageContext.getProperty(__MESSAGE_ID__)) + " - [RESPONSE]");
         return true;
     }
 
